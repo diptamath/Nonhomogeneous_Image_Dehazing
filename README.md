@@ -7,4 +7,4 @@ Preprint: https://arxiv.org/abs/2005.05999
 <img src="assets/cvpr_2.png" width="500"/>
 
 # Qualitative Results
-![](aasets/cvpr_1.png)
+![](assets/cvpr_1.png)
