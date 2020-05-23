@@ -5,9 +5,9 @@ from skimage.measure import compare_psnr, compare_ssim
 import pytorch_ssim
 from torch.autograd import Variable
 
-class GeneratorLoss_ssim(nn.Module):
+class CustomLoss_function(nn.Module):
     def __init__(self):
-        super(GeneratorLoss_ssim, self).__init__()
+        super(CustomLoss_function, self).__init__()
         vgg = vgg16(pretrained=True)
         loss_network = nn.Sequential(*list(vgg.features)[:31]).eval()
         for param in loss_network.parameters():
@@ -48,7 +48,7 @@ class TVLoss(nn.Module):
 
 
 if __name__ == "__main__":
-    g_loss = GeneratorLoss_ssim()
+    g_loss = CustomLoss_function()
     print(g_loss)
 
 
