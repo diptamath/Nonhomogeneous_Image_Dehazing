@@ -11,7 +11,7 @@ Preprint: https://arxiv.org/abs/2005.05999
 
 ## Getting Started
 
-For training, image paths for train, val and test data should be listed in text file (example. for image patch level traning, coresponding hazed and ground truth image paths are listed in text file with path  `./new_dataset/train_patch_gt.txt`). Pretrained models are given in the `checkpoints2/DMSHN_1_2_4` and `checkpoints2/DMPHN_1_2_4`path for demo.
+For training, image paths for train, val and test data should be listed in text file (example. for image patch level traning, coresponding hazed and ground truth image paths are listed in text file with path  `./new_dataset/train_patch_gt.txt`). Pretrained models are given in the `checkpoints2/DMSHN_1_2_4` and `checkpoints/DMPHN_1_2_4`path for demo.
 
 ### Prerequisites
 
@@ -19,7 +19,7 @@ For training, image paths for train, val and test data should be listed in text 
 - Scikit-image 
 - Numpy
 - Scipy
-- Opencv
+- OpenCV
 
 
 ## Running the tests
