@@ -12,35 +12,35 @@ import models
 import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, datasets
-from datasets import GoProDataset
+from datasets import NH_HazeDataset
 import time
-from loss import GeneratorLoss_ssim
+from loss import CustomLoss_function
 
 from tensorboardX import SummaryWriter
 writer = SummaryWriter('runs/train2/run3')
 
 from tqdm import tqdm
 
-# parser = argparse.ArgumentParser(description="Deep Multi-Patch Hierarchical Network")
-# parser.add_argument("-e","--epochs",type = int, default = 2400)
-# parser.add_argument("-se","--start_epoch",type = int, default = 0)
-# parser.add_argument("-b","--batchsize",type = int, default = 8)
-# parser.add_argument("-s","--imagesize",type = int, default = 60)
-# parser.add_argument("-l","--learning_rate", type = float, default = 0.0001)
-# parser.add_argument("-g","--gpu",type=int, default=0)
-# args = parser.parse_args()
+parser = argparse.ArgumentParser(description="Deep Multi-Scale Hierarchical Network")
+parser.add_argument("-e","--epochs",type = int, default = 300)
+parser.add_argument("-se","--start_epoch",type = int, default = 100)
+parser.add_argument("-b","--batchsize",type = int, default = 8)
+parser.add_argument("-s","--imagesize",type = int, default = 120)
+parser.add_argument("-l","--learning_rate", type = float, default = 0.000001)
+parser.add_argument("-g","--gpu",type=int, default=1)
+args = parser.parse_args()
 
 #Hyper Parameters
-METHOD = "DMPHN_1_2_4"
-LEARNING_RATE = 0.000001
-EPOCHS = 300
-GPU = 1
-BATCH_SIZE = 8
-IMAGE_SIZE = 120
+METHOD = "DMSHN_1_2_4"
+LEARNING_RATE = args.learning_rate
+EPOCHS = args.epochs
+GPU = args.gpu
+BATCH_SIZE = args.batchsize
+IMAGE_SIZE = args.imagesize
 
-start_epoch = 100
+start_epoch = args.start_epoch
 
-def save_deblur_images(images, iteration, epoch):
+def save_dehazed_images(images, iteration, epoch):
     filename = './checkpoints/' + METHOD + "/epoch" + str(epoch) + "/" + "Iter_" + str(iteration) + "_dehazed.png"
     torchvision.utils.save_image(images, filename)
 
@@ -137,9 +137,9 @@ def main():
         
         print("Training...")
         
-        train_dataset = GoProDataset(
-            blur_image_files = 'new_dataset/train_patch_hazy.txt',   # make changes here !
-            sharp_image_files = 'new_dataset/train_patch_gt.txt',
+        train_dataset = NH_HazeDataset(
+            hazed_image_files = 'new_dataset/train_patch_hazy.txt',   # make changes here !
+            dehazed_image_files = 'new_dataset/train_patch_gt.txt',
             root_dir = 'new_dataset/',
             crop = False,
             rotation = False,
@@ -158,13 +158,13 @@ def main():
         for iteration, images in enumerate(train_dataloader):            
             # mse = nn.MSELoss().cuda(GPU)   
             # mae = nn.L1Loss().cuda(GPU)      
-            custom_loss_fn = GeneratorLoss_ssim().cuda(GPU) 
+            custom_loss_fn = CustomLoss_function().cuda(GPU) 
             
-            gt = Variable(images['sharp_image'] - 0.5).cuda(GPU)            
+            gt = Variable(images['dehazed_image'] - 0.5).cuda(GPU)            
             H = gt.size(2)
             W = gt.size(3)
 
-            images_lv1 = Variable(images['blur_image'] - 0.5).cuda(GPU)
+            images_lv1 = Variable(images['hazed_image'] - 0.5).cuda(GPU)
             images_lv2 = F.interpolate(images_lv1, scale_factor = 0.5, mode = 'bilinear')
             images_lv3 = F.interpolate(images_lv2, scale_factor = 0.5, mode = 'bilinear')
 
