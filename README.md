@@ -15,11 +15,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+- **Pytorch** 
+- **Scikit-image**  
+- **Numpy** 
+- **Scipy** 
+- **Opencv** 
 
 ### Installing
 
@@ -41,17 +41,25 @@ End with an example of getting some data out of the system or using it for a lit
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+For model Inference, run following commands
 ```
-python test
+# for Deep Multi-Patch Hierarchical Network
+python DMPHN_test.py
+
+# for Deep Multi-Scale Hierarchical Network
+python DMSHN_test.py
 
 ```
 
 ## Running the Training
 
-Explain how to run the automated tests for this system
+For model training, run following commands
 ```
-python train
+# for Deep Multi-Patch Hierarchical Network
+python DMPHN_train.py
+
+# for Deep Multi-Scale Hierarchical Network
+python DMSHN_train.py
 
 ```
 
