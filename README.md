@@ -11,7 +11,7 @@ Preprint: https://arxiv.org/abs/2005.05999
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+For training, image paths for train, val and test data should be listed in text file (example. for image patch level traning, coresponding hazed and ground truth image paths are listed in text file with path  `./new_dataset/train_patch_gt.txt`). Pretrained models are given in the `checkpoints2/DMSHN_1_2_4` and `checkpoints2/DMPHN_1_2_4`path for demo.
 
 ### Prerequisites
 
@@ -21,23 +21,6 @@ These instructions will get you a copy of the project up and running on your loc
 - **Scipy** 
 - **Opencv** 
 
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
