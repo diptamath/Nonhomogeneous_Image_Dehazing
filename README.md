@@ -15,11 +15,11 @@ For training, image paths for train, val and test data should be listed in text 
 
 ### Prerequisites
 
-- **Pytorch** 
-- **Scikit-image**  
-- **Numpy** 
-- **Scipy** 
-- **Opencv** 
+- Pytorch
+- Scikit-image 
+- Numpy
+- Scipy
+- Opencv
 
 
 ## Running the tests
