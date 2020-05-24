@@ -12,9 +12,9 @@ import models
 import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, datasets
-from datasets import GoProDataset
+from datasets import NH_HazeDataset
 import time
-from loss import GeneratorLoss_ssim
+from loss import CustomLoss_function
 
 
 parser = argparse.ArgumentParser(description="Deep Multi-Patch Hierarchical Network")
@@ -34,7 +34,7 @@ GPU = args.gpu
 BATCH_SIZE = args.batchsize
 IMAGE_SIZE = args.imagesize
 
-def save_deblur_images(images, iteration, epoch):
+def save_dehazed_images(images, iteration, epoch):
     filename = './checkpoints/' + METHOD + "/epoch" + str(epoch) + "/" + "Iter_" + str(iteration) + "_dehazed.png"
     torchvision.utils.save_image(images, filename)
 
@@ -120,9 +120,9 @@ def main():
         
         print("Training...")
         
-        train_dataset = GoProDataset(
-            blur_image_files = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/train_patch_hazy.txt',   # make changes here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            sharp_image_files = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/train_patch_gt.txt',
+        train_dataset = NH_HazeDataset(
+            hazed_image_files = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/train_patch_hazy.txt',   # make changes here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            dehazed_image_files = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/train_patch_gt.txt',
             root_dir = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/',
             crop = False,
             rotation = False,
@@ -136,13 +136,13 @@ def main():
         for iteration, images in enumerate(train_dataloader):            
             # mse = nn.MSELoss().cuda(GPU)   
             # mae = nn.L1Loss().cuda(GPU)      
-            custom_loss_fn = GeneratorLoss_ssim().cuda(GPU) 
+            custom_loss_fn = CustomLoss_function().cuda(GPU) 
             
-            gt = Variable(images['sharp_image'] - 0.5).cuda(GPU)            
+            gt = Variable(images['dehazed_image'] - 0.5).cuda(GPU)            
             H = gt.size(2)
             W = gt.size(3)
 
-            images_lv1 = Variable(images['blur_image'] - 0.5).cuda(GPU)
+            images_lv1 = Variable(images['hazed_image'] - 0.5).cuda(GPU)
             images_lv2_1 = images_lv1[:,:,0:int(H/2),:]
             images_lv2_2 = images_lv1[:,:,int(H/2):H,:]
             images_lv3_1 = images_lv2_1[:,:,:,0:int(W/2)]
@@ -166,11 +166,11 @@ def main():
             residual_lv2 = decoder_lv2(feature_lv2)
 
             feature_lv1 = encoder_lv1(images_lv1 + residual_lv2) + feature_lv2
-            deblur_image = decoder_lv1(feature_lv1)
+            dehazed_image = decoder_lv1(feature_lv1)
 
-            loss_lv1 = custom_loss_fn(deblur_image,gt)
+            loss_lv1 = custom_loss_fn(dehazed_image,gt)
 
-            # loss_lv1 = 0.4*mse(deblur_image, gt) + 0.6*mae(deblur_image, gt)     # change loss function here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            # loss_lv1 = 0.4*mse(dehazed_image, gt) + 0.6*mae(dehazed_image, gt)     
 
             loss = loss_lv1
             
@@ -202,9 +202,9 @@ def main():
             	os.system('mkdir ./checkpoints/' + METHOD + '/epoch' + str(epoch))
             
             print("Testing...")
-            test_dataset = GoProDataset(
-                blur_image_files = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/val_hazy.txt',        # make changes here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                sharp_image_files = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/val_gt.txt',
+            test_dataset = NH_HazeDataset(
+                hazed_image_files = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/val_hazy.txt',        
+                dehazed_image_files = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/val_gt.txt',
                 root_dir = '/media/newton/newton/nitre/dataset/prepare_data/new_dataset/',
                 transform = transforms.Compose([
                     transforms.ToTensor()
@@ -213,7 +213,7 @@ def main():
             test_time = 0.0       		
             for iteration, images in enumerate(test_dataloader):
                 with torch.no_grad():                                   
-                    images_lv1 = Variable(images['blur_image'] - 0.5).cuda(GPU)
+                    images_lv1 = Variable(images['hazed_image'] - 0.5).cuda(GPU)
                     start = time.time()
                     H = images_lv1.size(2)
                     W = images_lv1.size(3)                    
@@ -240,12 +240,12 @@ def main():
                     residual_lv2 = decoder_lv2(feature_lv2)
                     
                     feature_lv1 = encoder_lv1(images_lv1 + residual_lv2) + feature_lv2
-                    deblur_image = decoder_lv1(feature_lv1)
+                    dehazed_image = decoder_lv1(feature_lv1)
 
                     stop = time.time()
                     test_time += stop - start
                     print('RunTime:%.4f'%(stop-start), '  Average Runtime:%.4f'%(test_time/(iteration+1)))
-                    save_deblur_images(deblur_image.data + 0.5, iteration, epoch)
+                    save_dehazed_images(dehazed_image.data + 0.5, iteration, epoch)
                     
         torch.save(encoder_lv1.state_dict(),str('./checkpoints/' + METHOD + "/encoder_lv1.pkl"))
         torch.save(encoder_lv2.state_dict(),str('./checkpoints/' + METHOD + "/encoder_lv2.pkl"))
