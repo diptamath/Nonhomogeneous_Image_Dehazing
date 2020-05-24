@@ -6,7 +6,7 @@ Preprint: https://arxiv.org/abs/2005.05999
 ## Highlights
 
 - **Lightweight:** The proposed system is very lightweight as the total size of the model is around 21.7 MB.
-- **Training Time Friendly:**  it is quite robust for different environments with various density of the haze or fog in the scene.
+- **Robust:**  it is quite robust for different environments with various density of the haze or fog in the scene.
 - **Fast:** it can process an HD image in 0.0145 seconds on average and can dehaze images from a video sequence in real-time.
 
 ## Getting Started
