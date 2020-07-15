@@ -179,8 +179,8 @@ def main():
 
             residual_lv2 = F.interpolate(residual_lv2, scale_factor=2, mode= 'bilinear')
             feature_lv2 = F.interpolate(feature_lv2, scale_factor=2, mode= 'bilinear')
-            feature_lv1 = encoder_lv2(images_lv1 + residual_lv2)
-            dehazed_image = decoder_lv2(feature_lv1 + feature_lv2)
+            feature_lv1 = encoder_lv1(images_lv1 + residual_lv2)
+            dehazed_image = decoder_lv1(feature_lv1 + feature_lv2)
 
             loss_lv1, loss_recn, loss_perc, loss_tv = custom_loss_fn(dehazed_image,gt)
 
