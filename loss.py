@@ -25,7 +25,7 @@ class CustomLoss_function(nn.Module):
 
         loss = recons_loss + 0.006*perception_loss + 2e-8*tv_loss
 
-        return loss, recons_loss, perception_loss, tv_loss
+        return loss # , recons_loss, perception_loss, tv_loss
 
 class TVLoss(nn.Module):
     def __init__(self, tv_loss_weight=1):
